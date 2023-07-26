@@ -1,0 +1,77 @@
+image: $DOCKER_REGISTRY_PREFIX/2smart/utils/combined-ci-image:buildx
+
+stages:
+  - test
+  - build
+  - release
+  - buildx
+
+before_script:
+  - git clone https://oauth2:$ACCESS_TOKEN@$DOCKER_UTILS_REPO_URL
+  - mv docker-utils/utils.sh docker.sh
+
+services:
+  - name: $DOCKER_REGISTRY_PREFIX/2smart/base-images/docker-dind
+    alias: docker
+    command: [ "--experimental" ]
+  - name: $DOCKER_REGISTRY_PREFIX/2smart/standalone/services/emqx:release
+    alias: emqx-emqx
+
+variables:
+  EMQX_NAME: emqx_broker
+  EMQX_LISTENER__TCP__EXTERNAL: 1883
+  EMQX_LISTENER__WS__EXTERNAL: 8083
+  EMQX_ACL_NOMATCH: allow
+  EMQX_ACL_FILE: etc/empty.conf
+  ENV_MODE: 'test'
+  MQTT_URI: 'mqtt://emqx-emqx:1883'
+  BASIC_AUTH_LOGIN: 'login'
+  BASIC_AUTH_PASSWORD: 'password'
+  IMAGE_PLATFORMS: linux/amd64,linux/arm/v7
+
+lint:
+  before_script:
+    - npm i
+  stage: test
+  script:
+    - npm run test:lint
+  only:
+    - 'merge_requests'
+    - 'master'
+
+test:
+  before_script:
+    - npm i
+  stage: test
+  script:
+    - npm run test
+  only:
+    - 'merge_requests'
+    - 'master'
+
+build:
+  stage: build
+  script:
+    - ./docker.sh rundaemon
+    - ./docker.sh build
+    - ./docker.sh push
+    - ./docker.sh push_bridge_type_to_demo
+  only:
+    - 'master'
+
+release:
+  stage: release
+  script:
+    - ./docker.sh rundaemon
+    - ./docker.sh release_bridge_type
+  only:
+    - 'release'
+
+buildx:
+  stage: buildx
+  script:
+    - ./docker.sh rundaemon
+    - ./docker.sh login
+    - SOURCE_TAG=$MULTIPLATFORM_TAG ./docker.sh buildx
+  when: manual
+  allow_failure: true

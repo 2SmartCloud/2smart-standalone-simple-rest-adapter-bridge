@@ -1,0 +1,49 @@
+{
+    "name": "simple-rest-adapter",
+    "version": "1.0.0",
+    "description": "Simple REST Adapter",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest --runInBand --forceExit",
+        "start": "node index.js",
+        "test:lint": "eslint lib/ etc/ app.js",
+        "test:coverage": "npm run test -- --coverage"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:2SmartCloud/2smart-standalone-simple-rest-adapter-bridge.git"
+    },
+    "author": "2Smart",
+    "devDependencies": {
+        "babel-eslint": "^10.1.0",
+        "eslint": "^7.3.1",
+        "eslint-config-webbylab": "^5.4.1",
+        "eslint-plugin-fetch": "0.0.1",
+        "eslint-plugin-import": "^2.21.2",
+        "eslint-plugin-jest": "^23.17.1",
+        "eslint-plugin-more": "^1.0.0",
+        "eslint-plugin-no-require-lodash": "^1.1.0",
+        "eslint-plugin-prefer-spread": "^1.0.3",
+        "eslint-plugin-react": "^7.20.0",
+        "eslint-plugin-security": "^1.4.0",
+        "jest": "^26.0.1",
+        "supertest": "^4.0.2"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "chista": "^1.0.0",
+        "express": "^4.17.1",
+        "express-basic-auth": "^1.2.0",
+        "homie-sdk": "github:2SmartCloud/2smart-standalone-homie-sdk",
+        "json-pointer": "^0.6.0",
+        "livr": "^2.3.1",
+        "livr-extra-rules": "^1.2.1",
+        "rename-keys": "^2.0.1"
+    },
+    "jest": {
+        "verbose": true,
+        "collectCoverageFrom": [
+            "**/lib/**/*.js"
+        ]
+    }
+}
